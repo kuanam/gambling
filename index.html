@@ -669,14 +669,23 @@ function render(data) {
   const el = document.getElementById("summary");
   el.innerHTML = "";
 
-  let best = data.reduce((a, b) => a.val > b.val ? a : b);
+  const maxVal = Math.max(...data.map(d => d.val * (boxWeights[d.key] || 1)));
 
   data.forEach(d => {
-    el.innerHTML += `
+    const weight = boxWeights[d.key] || 1;
+    const weightedVal = d.val * weight;
 
-        <div class="summary-card">
-        <div class="summary-title">${d.key}</div>
-        <div class="summary-value">${d.val.toFixed(2)} <span style="font-size:16px;color:#6b7280;">萬</span></div>
+    const highlight = (weightedVal === maxVal && maxVal > 0) ? "best" : "";
+
+    el.innerHTML += `
+      <div class="summary-card ${highlight}">
+        <div class="summary-title">
+          ${d.key} <span style="font-size:12px;color:#6b7280;">×${weight}</span>
+        </div>
+        <div class="summary-value">
+          ${weightedVal.toFixed(2)} 
+          <span style="font-size:16px;color:#6b7280;">萬</span>
+        </div>
       </div>
     `;
   });
